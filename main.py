@@ -1,6 +1,7 @@
 import argparse
+import os
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 
 from moviepy.editor import VideoFileClip
 from pymediainfo import MediaInfo
@@ -105,9 +106,10 @@ class VideoFile:
     Name: str
 
     def __init__(self, path: str):
-        self.path = path
-        self.Name = path.split('/')[-1]
-        self.type = VideoType.get_type(path)
+        self.path = path.replace('\\', '/')
+
+        self.Name = self.path.split('/')[-1]
+        self.type = VideoType.get_type(self.path)
 
     def __str__(self):
         return f"{self.Name} ({self.type})"
@@ -169,7 +171,10 @@ class VideoFile:
             print(e)
             return False
 
-    def check_get_file_info_verbose(self) -> bool:
+    def check_get_file_info_verbose(self, named: bool = False) -> bool:
+        if named:
+            print(f"Processing {self.path} ...")
+
         # Vérifier l'intégrité du fichier
         try:
             duration = self.check_file_integrity()
@@ -199,29 +204,131 @@ class VideoFile:
         return True
 
 
+class VideoFolder:
+    path: str
+    files: List[VideoFile]
+
+    def __init__(self, path: str):
+        self.path = path.replace('\\', '/')
+
+        self.find_files()
+
+    def add_file(self, file: VideoFile):
+        self.files.append(file)
+
+    def find_files(self):
+        self.files = []
+        files = VideoFolder.get_files(self.path)
+        for file in files:
+            if VideoType.get_type(file) != VideoType.OTHER:
+                self.add_file(VideoFile(file))
+
+    def get_files_count(self) -> int:
+        return len(self.files)
+
+    def check_files_integrity(self) -> bool:
+        for file in self.files:
+            try:
+                duration = file.check_file_integrity()
+                print(f"File {file.Name} is OK, duration: {duration} seconds")
+            except Exception as e:
+                print(f"Error processing {file.Name}:\n{e}")
+                return False
+        return True
+
+    def get_files_info(self) -> List[VideoInfo]:
+        files_info = []
+        for file in self.files:
+            try:
+                file_info = file.get_file_info()
+                files_info.append(file_info)
+            except Exception as e:
+                print(f"Error processing {file.Name}:\n{e}")
+        return files_info
+
+    def check_get_files_info(self) -> List[VideoInfo]:
+        files_info = []
+        for file in self.files:
+            try:
+                file_info = file.check_get_file_info()
+                if file_info is not None:
+                    files_info.append(file_info)
+            except Exception as e:
+                print(f"Error processing {file.Name}:\n{e}")
+        return files_info
+
+    def check_get_files_info_fast(self) -> bool:
+        for file in self.files:
+            try:
+                if not file.check_get_file_info_fast():
+                    return False
+            except Exception as e:
+                print(f"Error processing {file.Name}:\n{e}")
+                return False
+        return True
+
+    def check_get_files_info_verbose(self, named: bool = False) -> bool:
+        if named:
+            print(f"Processing {self.path} [{self.get_files_count()} files] ...")
+        for file in self.files:
+            try:
+                if not file.check_get_file_info_verbose(named=True):
+                    print(f"Error processing {file.Name}")
+            except Exception as e:
+                print(f"Error processing {file.Name}:\n{e}")
+                return False
+        return True
+
+    @staticmethod
+    def get_files(path: str) -> list:
+        path = path.replace('\\', '/')
+        if not path.endswith('/'):
+            path += '/'
+        # Récupérer la liste des fichiers dans le dossier
+        listdir: list = [path + e for e in os.listdir(path)]
+        files: list = []
+        for e in listdir:
+            if os.path.isdir(e):
+                files += VideoFolder.get_files(e)
+            elif os.path.isfile(e):
+                files.append(e)
+        return files
+
+
 def main():
-    Name = "MediaIntegrityChecker"
-    Version = "1.0.0"
-    Description = "A simple tool to check the integrity of video files and get their information"
+    name: str = "MediaIntegrityChecker"
+    version: str = "1.0.0"
+    description: str = "A simple tool to check the integrity of video files and get their information"
 
     # Créer un analyseur d'arguments
-    parser = argparse.ArgumentParser(prog=Name, description=Description)
-    parser.add_argument('-v', '--version', action='version', version=f'%(prog)s {Version}')
-    parser.add_argument('-f', '--file_path', type=str, help='Path to the video file')
+    parser = argparse.ArgumentParser(prog=name, description=description)
+    parser.add_argument('-v', '--version', action='version', version=f'%(prog)s {version}')
+    parser.add_argument('-p', '--path', type=str, help='Path to the video file or folder')
 
     # Analyser les arguments
     args = parser.parse_args()
 
     # Extraire les arguments
-    file_path: str = args.file_path
+    path = args.path
 
-    if file_path is None:
-        file_path = input("Enter the path to the video file: ")
+    auto: bool = True
+    if path is None:
+        auto = False
+        path = input("Enter the path to the video file: ")
 
-    # Créer un objet VideoFile
-    video_file = VideoFile(file_path)
+    if not os.path.exists(path):
+        print(f"Error: {path} does not exist")
+        return False
 
-    return video_file.check_get_file_info_verbose()
+    if os.path.isfile(path):
+        # Créer un objet VideoFile
+        video_file = VideoFile(path)
+        return video_file.check_get_file_info_verbose(named=auto)
+
+    if os.path.isdir(path):
+        # Créer un objet VideoFolder
+        video_folder = VideoFolder(path)
+        return video_folder.check_get_files_info_verbose(named=auto)
 
 
 if __name__ == '__main__':
