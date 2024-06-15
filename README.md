@@ -39,22 +39,26 @@ et `pymediainfo` pour fournir une solution complète pour l'analyse des fichiers
 
 ## Installation
 
-1. Installez FFmpeg sur votre système en suivant les instructions sur [FFmpeg.org](https://ffmpeg.org/download.html).
+1. Installez les dépendances Python :
 
-2. Installez les dépendances Python :
+  ```sh
+  pip install moviepy pymediainfo
+  ```
 
-```sh
-pip install ffmpeg-python pymediainfo
-```
+2. Clonez le dépôt :
+
+  ```sh
+  git clone https://github.com/Redstoneur/MediaIntegrityChecker.git
+  cd MediaIntegrityChecker
+  ```
 
 ## Utilisation
 
-1. Clonez le dépôt :
+1. Exécutez le script Python :
 
-```sh
-git clone https://github.com/votre-utilisateur/MediaIntegrityChecker.git
-cd MediaIntegrityChecker
-```
+  ```sh
+  python media_integrity_checker.py
+  ```
 
 ## Licence
 
