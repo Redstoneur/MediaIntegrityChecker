@@ -26,7 +26,7 @@
 
 ## Description
 
-**MediaIntegrityChecker** est un outil Python combinant ffmpeg-python et pymediainfo pour vérifier l'intégrité des
+**MediaIntegrityChecker** est un outil Python combinant moviepy et pymediainfo pour vérifier l'intégrité des
 fichiers multimédias et obtenir des informations détaillées sur les codecs, la durée, les dimensions, et plus encore.
 Idéal pour s'assurer que vos fichiers vidéo et audio sont utilisables et non corrompus.
 
@@ -73,4 +73,3 @@ Pour utiliser **MediaIntegrityChecker**, suivez les étapes suivantes :
 ## Licence
 
 Ce projet est sous licence `GNU General Public License v3.0`. Voir le fichier `LICENSE` pour plus d'informations.
-
