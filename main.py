@@ -321,6 +321,10 @@ def main():
         return False
 
     if os.path.isfile(path):
+        if VideoType.get_type(path) == VideoType.OTHER:
+            print(f"Error: {path} is not a video file")
+            return False
+        
         # Créer un objet VideoFile
         video_file = VideoFile(path)
         return video_file.check_get_file_info_verbose(named=auto)
