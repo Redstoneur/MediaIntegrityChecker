@@ -26,38 +26,48 @@
 
 ## Description
 
-**MediaIntegrityChecker** est un outil Python permettant de vérifier l'intégrité des fichiers multimédias et d'obtenir
-des informations détaillées sur les fichiers vidéo et audio. Il combine les bibliothèques `ffmpeg-python`
-et `pymediainfo` pour fournir une solution complète pour l'analyse des fichiers multimédias.
+**MediaIntegrityChecker** est un outil Python combinant ffmpeg-python et pymediainfo pour vérifier l'intégrité des
+fichiers multimédias et obtenir des informations détaillées sur les codecs, la durée, les dimensions, et plus encore.
+Idéal pour s'assurer que vos fichiers vidéo et audio sont utilisables et non corrompus.
 
 ## Fonctionnalités
 
-- Vérifie si les fichiers multimédias sont corrompus en utilisant `ffmpeg-python`.
-- Extrait des informations détaillées sur les fichiers multimédias, telles que le codec, la durée, les dimensions, et le
-  taux de rafraîchissement en utilisant `pymediainfo`.
-- Compatible avec une variété de formats de fichiers multimédias, y compris `.avi`, `.mp4`, et plus.
+**MediaIntegrityChecker** offre les fonctionnalités suivantes :
+
+- Vérification de l'intégrité des fichiers vidéo.
+- Récupération d'informations détaillées sur les fichiers vidéo, y compris :
+    - Codec
+    - Durée
+    - Dimensions (largeur et hauteur)
+    - Taux de trame (fps)
+    - Codec audio
+    - Canaux audio
+    - Taux d'échantillonnage audio
 
 ## Installation
 
-1. Installez les dépendances Python :
-
-  ```sh
-  pip install moviepy pymediainfo
-  ```
-
-2. Clonez le dépôt :
+1. Clonez le dépôt :
 
   ```sh
   git clone https://github.com/Redstoneur/MediaIntegrityChecker.git
   cd MediaIntegrityChecker
   ```
 
-## Utilisation
-
-1. Exécutez le script Python :
+2. Installez les dépendances Python :
 
   ```sh
-  python media_integrity_checker.py
+  pip install -r requirements.txt
+  ```
+
+## Utilisation
+
+Pour utiliser **MediaIntegrityChecker**, suivez les étapes suivantes :
+
+1. Exécutez le script Python `main.py` avec l'argument `-f` suivi du chemin vers le fichier vidéo que vous souhaitez
+   vérifier. Par exemple :
+
+  ```sh
+  python main.py -f /path/to/your/video.mp4
   ```
 
 ## Licence
